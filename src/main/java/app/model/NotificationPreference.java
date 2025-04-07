@@ -3,11 +3,12 @@ package app.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationPreference {
@@ -27,5 +28,11 @@ public class NotificationPreference {
 
     @Column(nullable = false)
     private String contactInfo;
+
+    @Column(nullable = false)
+    private LocalDateTime createdOn;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedOn;
 
 }
