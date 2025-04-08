@@ -34,9 +34,9 @@ public class NotificationService {
             preference.setContactInfo(dto.getContactInfo());
             preference.setType(DtoMapper.fromNotificationTypeRequest(dto.getType()));
             preference.setUpdatedOn(LocalDateTime.now());
-            preferenceRepository.save(preference);
-       } else {
-           NotificationPreference preference = NotificationPreference.builder()
+            return preferenceRepository.save(preference);
+       }
+       NotificationPreference preference = NotificationPreference.builder()
                    .userId(dto.getUserId())
                    .type(DtoMapper.fromNotificationTypeRequest(dto.getType()))
                    .contactInfo(dto.getContactInfo())
@@ -44,9 +44,6 @@ public class NotificationService {
                    .createdOn(LocalDateTime.now())
                    .updatedOn(LocalDateTime.now())
                    .build();
-           preferenceRepository.save(preference);
-       }
-
-        return null;
+       return  preferenceRepository.save(preference);
     }
 }
