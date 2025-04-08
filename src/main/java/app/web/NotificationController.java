@@ -8,10 +8,10 @@ import app.web.mapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping ("/api/v1/notifications")
@@ -30,5 +30,15 @@ public class NotificationController {
         NotificationPreference notificationPreference = notificationService.upsertPreference(upsertNotificationPreference);
         NotificationPreferenceResponse responseDto = DtoMapper.fromNotificationPreference(notificationPreference);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
+
+    @GetMapping("/preferences")
+    public ResponseEntity<NotificationPreferenceResponse> getUserNotificationPreference(@RequestParam(name = "userId") UUID userId) {
+       Optional<NotificationPreference> notificationPreference = notificationService.getPreferenceByUserId(userId);
+        NotificationPreferenceResponse responseDto = null;
+        if (notificationPreference.orElse(null) != null) {
+            responseDto = DtoMapper.fromNotificationPreference(notificationPreference.orElse(null));
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class NotificationService {
@@ -45,5 +46,9 @@ public class NotificationService {
                    .updatedOn(LocalDateTime.now())
                    .build();
        return  preferenceRepository.save(preference);
+    }
+
+    public Optional<NotificationPreference> getPreferenceByUserId(UUID userId) {
+        return Optional.ofNullable(preferenceRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("Notification preference for user id [%s] was not found!".formatted(userId))));
     }
 }
