@@ -8,6 +8,7 @@ import app.repository.NotificationRepository;
 import app.web.dto.NotificationRequest;
 import app.web.dto.UpsertNotificationPreference;
 import app.web.mapper.DtoMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
@@ -18,6 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@Slf4j
 public class NotificationService {
 
     private final NotificationPreferenceRepository preferenceRepository;
@@ -85,14 +87,14 @@ public class NotificationService {
                 .body(notificationRequest.getBody())
                 .userId(userId)
                 .createdOn(LocalDateTime.now())
-                .status(NotificationStatus.SUCCEEDED)
                 .isDeleted(false)
                 .build();
 
         try {
             mailSender.send(message);
+            notification.setStatus(NotificationStatus.SUCCEEDED);
         }   catch (Exception e) {
-            e.printStackTrace();
+            log.warn("There was an issue sending an email to %s due to [%s]".formatted(userPreference.get().getContactInfo(), e.getMessage()));
             notification.setStatus(NotificationStatus.FAILED);
         }
 

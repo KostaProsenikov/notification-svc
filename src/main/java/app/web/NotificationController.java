@@ -44,7 +44,7 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<NotificationResponse> sendNotification(@RequestBody NotificationRequest notificationRequest) {
 
         notificationService.sendMail(notificationRequest);
