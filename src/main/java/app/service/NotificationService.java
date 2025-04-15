@@ -72,9 +72,12 @@ public class NotificationService {
         }
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(userPreference.get().getContactInfo());
-        message.setSubject(notificationRequest.getSubject());
-        message.setText(notificationRequest.getBody());
+        if (userPreference.isPresent()) {
+            message.setTo(userPreference.get().getContactInfo());
+            message.setSubject(notificationRequest.getSubject());
+            message.setText(notificationRequest.getBody());
+        }
+
 
         Notification notification = Notification
                 .builder()
@@ -90,6 +93,7 @@ public class NotificationService {
             mailSender.send(message);
         }   catch (Exception e) {
             e.printStackTrace();
+            notification.setStatus(NotificationStatus.FAILED);
         }
 
         return notificationRepository.save(notification);
