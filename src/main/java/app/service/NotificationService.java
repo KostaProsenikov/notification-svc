@@ -1,7 +1,9 @@
 package app.service;
 
+import app.model.Notification;
 import app.model.NotificationPreference;
 import app.repository.NotificationPreferenceRepository;
+import app.web.dto.NotificationRequest;
 import app.web.dto.UpsertNotificationPreference;
 import app.web.mapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,5 +52,11 @@ public class NotificationService {
 
     public Optional<NotificationPreference> getPreferenceByUserId(UUID userId) {
         return Optional.ofNullable(preferenceRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("Notification preference for user id [%s] was not found!".formatted(userId))));
+    }
+
+    public Notification sendMail(NotificationRequest notificationRequest) {
+
+
+        return null;
     }
 }

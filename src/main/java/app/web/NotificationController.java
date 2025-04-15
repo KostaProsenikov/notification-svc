@@ -3,6 +3,8 @@ package app.web;
 import app.model.NotificationPreference;
 import app.service.NotificationService;
 import app.web.dto.NotificationPreferenceResponse;
+import app.web.dto.NotificationRequest;
+import app.web.dto.NotificationResponse;
 import app.web.dto.UpsertNotificationPreference;
 import app.web.mapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,5 +42,12 @@ public class NotificationController {
             responseDto = DtoMapper.fromNotificationPreference(notificationPreference.orElse(null));
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+    }
+
+    @PostMapping
+    public ResponseEntity<NotificationResponse> sendNotification(@RequestBody NotificationRequest notificationRequest) {
+
+        notificationService.sendMail(notificationRequest);
+        return null;
     }
 }
