@@ -34,3 +34,6 @@ build/
 
 ### Application properties file
 src/main/resources/application.properties
+
+### Mac Files
+src/**/.DS_Store*
