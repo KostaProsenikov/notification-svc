@@ -35,8 +35,8 @@ public class NotificationService {
 
     public NotificationPreference upsertPreference(UpsertNotificationPreference dto) {
 
-      // upsert
-      // 1. Try to find if such exists in the DB
+      // Upsert
+      // 1. Try to find if such exists in DB
       // 2. If exists - update it
       // 3. If it does not exist - just create a new record in DB
 
@@ -94,8 +94,10 @@ public class NotificationService {
             mailSender.send(message);
             notification.setStatus(NotificationStatus.SUCCEEDED);
         }   catch (Exception e) {
-            log.warn("There was an issue sending an email to %s due to [%s]".formatted(userPreference.get().getContactInfo(), e.getMessage()));
-            notification.setStatus(NotificationStatus.FAILED);
+            if (userPreference.isPresent()) {
+                log.warn("There was an issue sending an email to %s due to [%s]".formatted(userPreference.get().getContactInfo(), e.getMessage()));
+                notification.setStatus(NotificationStatus.FAILED);
+            }
         }
 
         return notificationRepository.save(notification);
