@@ -1,5 +1,6 @@
 package app.web;
 
+import app.model.Notification;
 import app.model.NotificationPreference;
 import app.service.NotificationService;
 import app.web.dto.NotificationPreferenceResponse;
@@ -47,7 +48,12 @@ public class NotificationController {
     @PostMapping()
     public ResponseEntity<NotificationResponse> sendNotification(@RequestBody NotificationRequest notificationRequest) {
 
-        notificationService.sendMail(notificationRequest);
-        return null;
+//        Entity
+        Notification notification = notificationService.sendNotification(notificationRequest);
+
+//        DTO
+       NotificationResponse response = DtoMapper.fromNotification(notification);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

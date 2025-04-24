@@ -3,6 +3,7 @@ package app.service;
 import app.model.Notification;
 import app.model.NotificationPreference;
 import app.model.NotificationStatus;
+import app.model.NotificationType;
 import app.repository.NotificationPreferenceRepository;
 import app.repository.NotificationRepository;
 import app.web.dto.NotificationRequest;
@@ -37,7 +38,7 @@ public class NotificationService {
 
       // Upsert
       // 1. Try to find if such exists in DB
-      // 2. If exists - update it
+      // 2. If it exists - update it
       // 3. If it does not exist - just create a new record in DB
 
        Optional<NotificationPreference> userNotificationPreferenceOptional = preferenceRepository.findByUserId(dto.getUserId());
@@ -64,7 +65,7 @@ public class NotificationService {
         return Optional.ofNullable(preferenceRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("Notification preference for user id [%s] was not found!".formatted(userId))));
     }
 
-    public Notification sendMail(NotificationRequest notificationRequest) {
+    public Notification sendNotification(NotificationRequest notificationRequest) {
 
         UUID userId = notificationRequest.getUserId();
         Optional<NotificationPreference> userPreference = getPreferenceByUserId(userId);
@@ -86,6 +87,7 @@ public class NotificationService {
                 .subject(notificationRequest.getSubject())
                 .body(notificationRequest.getBody())
                 .userId(userId)
+                .type(NotificationType.EMAIL)
                 .createdOn(LocalDateTime.now())
                 .isDeleted(false)
                 .build();

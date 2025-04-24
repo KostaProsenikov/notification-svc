@@ -31,6 +31,10 @@ public class Notification {
 
     @Column (nullable = false)
     @Enumerated (EnumType.STRING)
+    private NotificationType type;
+
+    @Column (nullable = false)
+    @Enumerated (EnumType.STRING)
     private NotificationStatus status;
 
     private UUID userId;
