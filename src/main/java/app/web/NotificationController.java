@@ -53,7 +53,7 @@ public class NotificationController {
         Notification notification = notificationService.sendNotification(notificationRequest);
 
 //        DTO
-       NotificationResponse response = DtoMapper.fromNotification(notification);
+        NotificationResponse response = DtoMapper.fromNotification(notification);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }

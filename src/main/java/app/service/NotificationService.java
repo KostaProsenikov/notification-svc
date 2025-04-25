@@ -59,11 +59,19 @@ public class NotificationService {
                    .createdOn(LocalDateTime.now())
                    .updatedOn(LocalDateTime.now())
                    .build();
-       return  preferenceRepository.save(preference);
+
+       NotificationPreference notificationPreference = preferenceRepository.save(preference);
+       System.out.printf("NotificationPreference was saved for user with id [%s] \n", dto.getUserId());
+       return notificationPreference;
     }
 
     public Optional<NotificationPreference> getPreferenceByUserId(UUID userId) {
-        return Optional.ofNullable(preferenceRepository.findByUserId(userId).orElseThrow(() -> new NullPointerException("Notification preference for user id [%s] was not found!".formatted(userId))));
+        try {
+            return preferenceRepository.findByUserId(userId);
+        } catch (NullPointerException e) {
+            log.warn("Notification preference for user id [%s] was not found!".formatted(userId));
+        }
+        return Optional.empty();
     }
 
     public Notification sendNotification(NotificationRequest notificationRequest) {
