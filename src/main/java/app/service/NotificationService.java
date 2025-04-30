@@ -55,7 +55,7 @@ public class NotificationService {
                    .userId(dto.getUserId())
                    .type(DtoMapper.fromNotificationTypeRequest(dto.getType()))
                    .contactInfo(dto.getContactInfo())
-                   .isEnabled(dto.isNotificationEnabled())
+                   .enabled(dto.isNotificationEnabled())
                    .createdOn(LocalDateTime.now())
                    .updatedOn(LocalDateTime.now())
                    .build();
@@ -79,18 +79,6 @@ public class NotificationService {
         UUID userId = notificationRequest.getUserId();
         Optional<NotificationPreference> userPreference = getPreferenceByUserId(userId);
 
-        if (userPreference.isPresent() && !userPreference.get().isEnabled()) {
-            throw new IllegalArgumentException("User with id [%s] does not allow to receive notifications".formatted(userId));
-        }
-
-        SimpleMailMessage message = new SimpleMailMessage();
-        if (userPreference.isPresent()) {
-            message.setTo(userPreference.get().getContactInfo());
-            message.setSubject(notificationRequest.getSubject());
-            message.setText(notificationRequest.getBody());
-        }
-
-
         Notification notification = Notification
                 .builder()
                 .subject(notificationRequest.getSubject())
@@ -101,16 +89,27 @@ public class NotificationService {
                 .isDeleted(false)
                 .build();
 
-        try {
-            mailSender.send(message);
-            notification.setStatus(NotificationStatus.SUCCEEDED);
-        }   catch (Exception e) {
+        if (userPreference.isPresent() && !userPreference.get().isEnabled()) {
+            System.out.printf("User with id [%s] does not allow to receive notifications".formatted(userId));
+            notification.setStatus(NotificationStatus.DISABLED);
+        } else {
+            SimpleMailMessage message = new SimpleMailMessage();
             if (userPreference.isPresent()) {
-                log.warn("There was an issue sending an email to %s due to [%s]".formatted(userPreference.get().getContactInfo(), e.getMessage()));
-                notification.setStatus(NotificationStatus.FAILED);
+                message.setTo(userPreference.get().getContactInfo());
+                message.setSubject(notificationRequest.getSubject());
+                message.setText(notificationRequest.getBody());
+            }
+
+            try {
+                mailSender.send(message);
+                notification.setStatus(NotificationStatus.SUCCEEDED);
+            }   catch (Exception e) {
+                if (userPreference.isPresent()) {
+                    log.warn("There was an issue sending an email to %s due to [%s]".formatted(userPreference.get().getContactInfo(), e.getMessage()));
+                    notification.setStatus(NotificationStatus.FAILED);
+                }
             }
         }
-
         return notificationRepository.save(notification);
     }
 
