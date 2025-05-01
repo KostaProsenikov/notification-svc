@@ -26,7 +26,7 @@ public class Notification {
     @Column (nullable = false)
     private String body;
 
-    @Column (nullable = false)
+    @Column (nullable = false, name="created_on")
     private LocalDateTime createdOn;
 
     @Column (nullable = false)
