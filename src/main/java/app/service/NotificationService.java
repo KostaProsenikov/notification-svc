@@ -40,7 +40,7 @@ public class NotificationService {
       // Upsert
       // 1. Try to find if such exists in DB
       // 2. If it exists - update it
-      // 3. If it does not exist - just create a new record in DB
+      // 3. If it does not exist - create a new record in DB
 
        Optional<NotificationPreference> userNotificationPreferenceOptional = preferenceRepository.findByUserId(dto.getUserId());
        if (userNotificationPreferenceOptional.isPresent()) {
