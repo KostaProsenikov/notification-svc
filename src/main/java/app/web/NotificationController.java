@@ -73,4 +73,11 @@ public class NotificationController {
         List<NotificationResponse> notificationHistory = notificationService.getNotificationHistory(userId).stream().map(DtoMapper::fromNotification).toList();
         return ResponseEntity.status(HttpStatus.OK).body(notificationHistory);
     }
+
+//    DELETE /api/v1/notifications
+    @DeleteMapping("")
+    public ResponseEntity<Void> clearNotificationHistory(@RequestParam(name = "userId") UUID userId) {
+        notificationService.clearNotifications(userId);
+        return ResponseEntity.ok().body(null);
+    }
 }

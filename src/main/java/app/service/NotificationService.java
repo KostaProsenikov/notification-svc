@@ -125,4 +125,16 @@ public class NotificationService {
         }
         return null;
     }
+
+    public void clearNotifications(UUID userId) {
+        List<Notification> notifications = getNotificationHistory(userId);
+
+        for (Notification notification : notifications) {
+            notification.setDeleted(true);
+            notificationRepository.save(notification);
+            System.out.printf("Notification with id [%s] was deleted for user with id [%s] \n", notification.getId(), userId);
+        }
+
+        System.out.printf("All notifications for user with id [%s] were deleted \n", userId);
+    }
 }
