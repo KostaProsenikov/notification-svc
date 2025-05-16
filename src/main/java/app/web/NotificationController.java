@@ -80,4 +80,14 @@ public class NotificationController {
         notificationService.clearNotifications(userId);
         return ResponseEntity.ok().body(null);
     }
+
+    @PutMapping()
+    public ResponseEntity<Void> retryFailedNotifications(@RequestParam(name = "userId") UUID userId) {
+        Notification notification = notificationService.retryFailedNotifications(userId);
+        if (notification == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        NotificationResponse responseDto = DtoMapper.fromNotification(notification);
+        return ResponseEntity.ok().body(null);
+    }
 }

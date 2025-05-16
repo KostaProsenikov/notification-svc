@@ -137,4 +137,43 @@ public class NotificationService {
 
         System.out.printf("All notifications for user with id [%s] were deleted \n", userId);
     }
+
+    public Notification retryFailedNotifications(UUID userId) {
+
+        Optional<NotificationPreference> preference = getPreferenceByUserId(userId);
+
+        if (preference.isEmpty()) {
+            log.warn("Notification preference for user id [%s] was not found!".formatted(userId));
+            throw new IllegalArgumentException("Notification preference for user id [%s] was not found!".formatted(userId));
+        }
+        if (!preference.get().isEnabled()) {
+            System.out.printf("User with id [%s] does not allow to receive notifications".formatted(userId));
+            throw new IllegalArgumentException("User does not allow to receive notifications");
+        }
+
+        List<Notification> notifications = notificationRepository.findAllByUserIdAndStatus(userId, NotificationStatus.FAILED);
+        List<Notification> failedNotifications = notifications.stream().filter(i -> !i.isDeleted()).toList();
+        for (Notification notification : failedNotifications) {
+            SimpleMailMessage message = new SimpleMailMessage();
+            Optional<NotificationPreference> userPreference = getPreferenceByUserId(userId);
+            if (userPreference.isPresent()) {
+                message.setTo(userPreference.get().getContactInfo());
+                message.setSubject(notification.getSubject());
+                message.setText(notification.getBody());
+            }
+
+            try {
+                mailSender.send(message);
+                notification.setStatus(NotificationStatus.SUCCEEDED);
+            } catch (Exception e) {
+                if (userPreference.isPresent()) {
+                    log.warn("There was an issue sending an email to %s due to [%s]".formatted(userPreference.get().getContactInfo(), e.getMessage()));
+                    notification.setStatus(NotificationStatus.FAILED);
+                }
+            }
+            return notificationRepository.save(notification);
+        }
+
+        return null;
+    }
 }
